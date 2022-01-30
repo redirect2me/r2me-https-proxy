@@ -1,0 +1,4 @@
+#
+# robots.txt for Redirect2Me's HTTPS Proxy
+#
+Allow: /
