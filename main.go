@@ -18,11 +18,12 @@ import (
 )
 
 var (
-	verbose  = flag.Bool("verbose", true, "verbose logging")
-	bind     = flag.String("bind", ":443", "address to listen on")
-	email    = flag.String("email", "r2proxy@mailinator.com", "email address for LetsEncrypt")
-	hostname = flag.String("hostname", "localhost", "hostname for default server")
-	target   = flag.String("target", "localhost", "target (=proxied server hostname)")
+	verbose   = flag.Bool("verbose", true, "verbose logging")
+	bind      = flag.String("bind", ":443", "address to listen on")
+	email     = flag.String("email", "r2proxy@mailinator.com", "email address for LetsEncrypt")
+	hostname  = flag.String("hostname", "localhost", "hostname for default server")
+	serveHttp = flag.Bool("http", false, "also handle http on port 80")
+	target    = flag.String("target", "localhost", "target (=proxied server hostname)")
 
 	logger = log.New(os.Stdout, "R2PROXY: ", log.Ldate|log.Ltime|log.Lmicroseconds|log.LUTC)
 )
@@ -63,6 +64,10 @@ func main() {
 		logger.Printf("INFO: proxying %s (%s)\n", r.URL, r.Host)
 		proxy.ServeHTTP(w, r)
 	})
+
+	if *serveHttp {
+		go http.ListenAndServe(":80", mux)
+	}
 
 	log.Fatal(http.ListenAndServe(*bind, mux))
 }
