@@ -1,0 +1,30 @@
+# nfpm config file for r2m-https-proxy
+#
+# check https://nfpm.goreleaser.com/configuration for detailed usage
+#
+name: "r2m-https-proxy"
+arch: "amd64"
+platform: "linux"
+version: "v1.0.0"
+section: "default"
+priority: "extra"
+maintainer: "Andrew Marcuse <fileformat@gmail.com>"
+description: |
+  HTTPS proxy server with automatic certificate handling
+vendor: "Redirect2Me"
+homepage: "http://www.redirect2.me/"
+license: "AGPLv3+"
+changelog: "changelog.yaml"
+contents:
+- src: ./linux/r2m-https-proxy.service
+  dst: /etc/systemd/system/r2m-https-proxy.service
+- src: ./linux/r2m-https-proxy.service
+  dst: /opt/redirect2me/r2m-https-proxy
+- src: /opt/redirect2me/r2m-https-proxy.service
+  dst: /etc/systemd/system/r2m-https-proxy.service
+  type: symlink
+overrides:
+  deb:
+    scripts:
+      postinstall: ./linux/postinstall.sh
+      preremove: ./linux/preremove.sh
