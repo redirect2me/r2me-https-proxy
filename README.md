@@ -22,7 +22,7 @@ An HTTPS proxy is a pretty common need, and some form of it exists in most webse
 
 ### Allowed hostnames
 
-In order to prevent abuse, you may need to limit the hostnames that are allowed.  The `allowed` parameter:
+In order to prevent abuse, you may need to limit the hostnames that are allowed.  The `--allowed` parameter:
 * `all` - all hostnames (default)
 * `api:url` - call an external API (Coming soon)
 * `list:host1,host2,...` - list of allowed hostnames (Coming soon)
@@ -35,6 +35,12 @@ Certificate provisioning will only work if the DNS is configured correctly, so t
 ### Certificate storage
 
 Coming soon
+
+## Local development
+
+```
+go install github.com/cosmtrek/air@latest
+```
 
 ## Contributions
 
@@ -54,6 +60,8 @@ Contributions are welcome!
 [![Pico CSS](https://www.vectorlogo.zone/logos/picocss/picocss-ar21.svg)](https://picocss.com/ "CSS")
 [![Python](https://www.vectorlogo.zone/logos/python/python-ar21.svg)](https://www.python.org/ "Test origin webserver")
 [![svgrepo](https://www.vectorlogo.zone/logos/svgrepo/svgrepo-ar21.svg)](https://www.svgrepo.com/svg/31307/server "Icon")
+
+* [cosmtrek/air](https://github.com/cosmtrek/air)
 
 ## Alternatives
 

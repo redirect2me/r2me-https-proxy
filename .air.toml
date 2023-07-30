@@ -2,8 +2,8 @@ oot = "."
 tmp_dir = "tmp"
 
 [build]
-  bin = "./tmp/main --bind=localhost:4000 --hostname=localhost --http --target=localhost:8080 --verbose"
-  cmd = "go build -o ./tmp/main ."
+  bin = "./tmp/devproxy -bind=localhost:5000 -hostname=proxytest.redirect2.me -http -staging -target=localhost:4000 -verbose"
+  cmd = "go build -o ./tmp/devproxy ."
   delay = 1000
   exclude_dir = ["tmp", "vendor"]
   exclude_file = []

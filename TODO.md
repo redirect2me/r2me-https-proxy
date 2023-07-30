@@ -24,9 +24,10 @@
 
 long term:
 - local 404 handler
-- structured logging (zap?)
+- structured logging
 - metrics
 - logging
+- allow custom ACME providers (in addtion/instead of `staging`)
 - graceful shutdown
 - allowlist from db
 - use pure go DNS resolver

@@ -8,7 +8,7 @@ import (
 
 	"os"
 
-	"github.com/caddyserver/certmagic"
+	//"github.com/caddyserver/certmagic"
 )
 
 var (
@@ -33,6 +33,8 @@ func main() {
 		logger.Printf("INFO: proxy target is %s\n", *target)
 	}
 
+	var done = make(chan bool)
+
 	director := func(req *http.Request) {
 
 		req.Header.Add("X-Forwarded-Host", req.Host)
@@ -45,25 +47,23 @@ func main() {
 
 	proxy := &httputil.ReverseProxy{Director: director}
 
-	mux := http.NewServeMux()
-	mux.Handle(*hostname+"/status.json", &Status{})
-
-	theStaticHandler := staticHandler()
-	mux.Handle(*hostname+"/robots.txt", theStaticHandler)
-	mux.Handle(*hostname+"/css/pico.min.css", theStaticHandler)
-	mux.Handle(*hostname+"/favicon.ico", theStaticHandler)
-	mux.Handle(*hostname+"/favicon.svg", theStaticHandler)
-	mux.Handle(*hostname+"/", theStaticHandler)
-
+	mux := getAssetMux(*hostname)
+	
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		logger.Printf("INFO: proxying %s (%s)\n", r.URL, r.Host)
 		proxy.ServeHTTP(w, r)
 	})
 
 	if *serveHttp {
-		logger.Printf("INFO: proxying http on port 80")
-		go http.ListenAndServe(":80", mux)
+		logger.Printf("INFO: proxying http on port 8080")
+		
+	log.Fatal(http.ListenAndServe(":8080", mux))
 	}
+
+	<-done
+
+	logger.Printf("INFO: done")
+	/*
 
 	certmagic.DefaultACME.Agreed = true
 	certmagic.DefaultACME.Email = *email
@@ -88,4 +88,5 @@ func main() {
 	}
 
 	log.Fatal(httpsServer.ListenAndServeTLS("", ""))
+	*/
 }
