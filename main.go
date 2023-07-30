@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"log"
-	"net/http"
-	"net/http/httputil"
+	//"net/http"
+	//"net/http/httputil"
 
 	"os"
 
@@ -16,7 +16,7 @@ var (
 	bind      = flag.String("bind", ":443", "address to listen on")
 	email     = flag.String("email", "r2proxy@mailinator.com", "email address for LetsEncrypt")
 	hostname  = flag.String("hostname", "localhost", "hostname for default server")
-	serveHttp = flag.Bool("http", false, "also handle http on port 80")
+	bindHttp = flag.String("http", "none", "bind address for handling plain http (or \"none\")")
 	staging   = flag.Bool("staging", false, "use LetsEncrypt staging server")
 	target    = flag.String("target", "localhost", "target (=proxied server hostname)")
 
@@ -28,65 +28,21 @@ func main() {
 	flag.Parse()
 
 	if *verbose {
-		logger.Printf("INFO: https listening on %s\n", *bind)
+		logger.Printf("xINFO: https listening on %s\n", *bind)
 		logger.Printf("INFO: local hostname is %s\n", *hostname)
 		logger.Printf("INFO: proxy target is %s\n", *target)
+		logger.Printf("INFO: http handling is %s\n", *bindHttp)
 	}
 
 	var done = make(chan bool)
 
-	director := func(req *http.Request) {
-
-		req.Header.Add("X-Forwarded-Host", req.Host)
-		req.Header.Add("X-Origin-Host", *target)
-		//LATER: add X-Forwarded-For
-		req.URL.Scheme = "http"
-		req.URL.Host = *target
-		req.Host = *target
-	}
-
-	proxy := &httputil.ReverseProxy{Director: director}
-
 	mux := getAssetMux(*hostname)
-	
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		logger.Printf("INFO: proxying %s (%s)\n", r.URL, r.Host)
-		proxy.ServeHTTP(w, r)
-	})
+	mux.Handle("/", getProxyHandler(*target))
 
-	if *serveHttp {
-		logger.Printf("INFO: proxying http on port 8080")
-		
-	log.Fatal(http.ListenAndServe(":8080", mux))
-	}
+	go serveHttps(*bind, mux)
+	go serveHttp(*bindHttp, mux)
 
 	<-done
 
 	logger.Printf("INFO: done")
-	/*
-
-	certmagic.DefaultACME.Agreed = true
-	certmagic.DefaultACME.Email = *email
-	if *staging {
-		certmagic.DefaultACME.CA = certmagic.LetsEncryptStagingCA
-	} else {
-		certmagic.DefaultACME.CA = certmagic.LetsEncryptProductionCA
-	}
-	certmagic.Default.OnDemand = &certmagic.OnDemandConfig{
-		DecisionFunc: func(name string) error {
-			//LATER: DNS check
-			//LATER: algorithm check
-			return nil
-		},
-	}
-
-	magic := certmagic.NewDefault()
-	httpsServer := &http.Server{
-		Addr:      *bind,
-		Handler:   mux,
-		TLSConfig: magic.TLSConfig(),
-	}
-
-	log.Fatal(httpsServer.ListenAndServeTLS("", ""))
-	*/
 }

@@ -2,7 +2,7 @@ oot = "."
 tmp_dir = "tmp"
 
 [build]
-  bin = "./tmp/devproxy -bind=localhost:5000 -hostname=proxytest.redirect2.me -http -staging -target=localhost:4000 -verbose"
+  bin = "./tmp/devproxy -bind=localhost:8443 -hostname=proxytest.redirect2.me -http=\":8080\" -staging -target=localhost:4000 -verbose"
   cmd = "go build -o ./tmp/devproxy ."
   delay = 1000
   exclude_dir = ["tmp", "vendor"]
